@@ -1,0 +1,27 @@
+{
+    "name": "teammanagement",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "dev": "npx nodemon server.js",
+        "start": "node server.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/amanmishra1412/team-manage.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/amanmishra1412/team-manage/issues"
+    },
+    "homepage": "https://github.com/amanmishra1412/team-manage#readme",
+    "description": "",
+    "dependencies": {
+        "dotenv": "^17.2.3",
+        "express": "^5.2.1",
+        "mongoose": "^9.1.5"
+    }
+}
