@@ -1,36 +1,5 @@
 const userModel = require("../models/user.model");
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
-const registerControl = async (req, res) => {
-    try {
-        const { username, email, password, role } = req.body;
-        const userData = req.user;
-        const isExist = await userModel.findOne({
-            $or: [{ username }, { email }],
-        });
-
-        if (isExist) {
-            return res
-                .status(409)
-                .json({ msg: "User already exists", isExist });
-        }
-
-        const hashPass = await bcrypt.hash(password, 10);
-
-        const userCreate = await userModel.create({
-            username,
-            email,
-            password: hashPass,
-            role,
-        });
-
-        return res.status(201).json({ msg: "User created", userCreate });
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({ msg: "Server error" });
-    }
-};
 
 const loginControl = async (req, res) => {
     try {
@@ -79,4 +48,4 @@ const logoutControl = (req, res) => {
     return res.status(200).json({ msg: "Logout Success" });
 };
 
-module.exports = { registerControl, loginControl, logoutControl };
+module.exports = { loginControl, logoutControl };

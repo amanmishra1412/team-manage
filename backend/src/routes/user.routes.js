@@ -1,13 +1,24 @@
 const express = require("express");
-const { readAllData, readData } = require("../controllers/user.controller");
+const {
+    readAllData,
+    readData,
+    createControl,
+    deleteControl,
+    updateControl,
+    adminUpdateControl,
+} = require("../controllers/user.controller");
+
 const { loginCheck, adminOnly } = require("../middlewares/auth");
 const router = express.Router();
 
-router.get("/", (req, res) => {
-    res.send("hello");
-});
+// Admin Routes
+router.get("/", loginCheck, adminOnly, readAllData);
+router.post("/", loginCheck, adminOnly, createControl);
+router.patch("/:id", loginCheck, adminOnly, adminUpdateControl);
+router.delete("/:id", loginCheck, adminOnly, deleteControl);
 
-router.get("/read", loginCheck, adminOnly, readAllData);
-router.get("/readuser", loginCheck, readData);
+// User / Manager Routes
+router.get("/me", loginCheck, readData);
+router.patch("/me", loginCheck, updateControl);
 
 module.exports = router;

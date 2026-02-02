@@ -23,6 +23,11 @@ const userModel = new mongoose.Schema(
             enum: ["admin", "manager", "user"],
             default: "user",
         },
+        status: {
+            type: String,
+            enum: ["active", "blocked"],
+            default: "active",
+        },
     },
     { timestamps: true },
 );
