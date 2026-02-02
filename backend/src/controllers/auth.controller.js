@@ -5,14 +5,14 @@ const jwt = require("jsonwebtoken");
 const registerControl = async (req, res) => {
     try {
         const { username, email, password, role } = req.body;
-
+        const userData = req.user;
         const isExist = await userModel.findOne({
             $or: [{ username }, { email }],
         });
 
         if (isExist) {
             return res
-                .status(400)
+                .status(409)
                 .json({ msg: "User already exists", isExist });
         }
 
@@ -37,10 +37,9 @@ const loginControl = async (req, res) => {
         const { email, password } = req.body;
 
         const isExist = await userModel.findOne({ email });
-        console.log(isExist);
 
         if (!isExist) {
-            return res.status(404).json({ msg: "No User" });
+            return res.status(401).json({ msg: "No User" });
         }
 
         const checkPass = await bcrypt.compare(password, isExist.password);
@@ -56,6 +55,8 @@ const loginControl = async (req, res) => {
             },
             process.env.JWT_SECERET,
         );
+
+        res.cookie("token", token);
 
         return res.status(200).json({
             msg: "Login successful",
@@ -73,4 +74,9 @@ const loginControl = async (req, res) => {
     }
 };
 
-module.exports = { registerControl, loginControl };
+const logoutControl = (req, res) => {
+    res.clearCookie("token");
+    return res.status(200).json({ msg: "Logout Success" });
+};
+
+module.exports = { registerControl, loginControl, logoutControl };
