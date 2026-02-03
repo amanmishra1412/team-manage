@@ -46,6 +46,10 @@ const createControl = async (req, res) => {
     try {
         const { username, email, password, role } = req.body;
 
+        if (!username || !email || !password) {
+            return res.status(400).json({ msg: "All fields are required" });
+        }
+
         const isExist = await userModel.findOne({
             $or: [{ username }, { email }],
         });

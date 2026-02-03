@@ -13,6 +13,6 @@ router.get("/", (req, res) => {
 });
 
 router.post("/login", loginControl);
-router.post("/logout", loginCheck, logoutControl);
+router.get("/logout", loginCheck, logoutControl);
 
 module.exports = router;
