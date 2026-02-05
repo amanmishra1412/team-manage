@@ -24,5 +24,14 @@ const createProject = async (req, res) => {
     }
 };
 
+const deleteProject = async (req,res)=>{
+    try {
+        
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({ msg: "Server Error" });
+    }
+}
 
-module.exports = { createProject, readProject};
+
+module.exports = { createProject, readProject, deleteProject};
