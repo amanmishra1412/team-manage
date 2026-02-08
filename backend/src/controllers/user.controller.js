@@ -61,7 +61,7 @@ const createControl = async (req, res) => {
         const hashPass = await bcrypt.hash(password, 10);
 
         await transporter.sendMail({
-            from: '"Your App Name" <no-reply@yourapp.com>',
+            from: `"Team Management" ${process.env.GOOGLE_APP_MAIL}`,
             to: email,
             subject: "Your Account Has Been Created",
             text: `Hello ${username},

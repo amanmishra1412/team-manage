@@ -30,7 +30,6 @@ const loginControl = async (req, res) => {
 
         return res.status(200).json({
             msg: "Login successful",
-            token,
             user: {
                 id: isExist._id,
                 username: isExist.username,
