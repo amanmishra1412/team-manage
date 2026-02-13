@@ -9,6 +9,6 @@ const router = express.Router();
 
 router.get("/", loginCheck, adminOnly, readProject);
 router.post("/", loginCheck, adminOnly, createProject);
-router.delete("/", loginCheck, adminOnly, deleteProject);
+router.delete("/:id", loginCheck, adminOnly, deleteProject);
 
 module.exports = router;

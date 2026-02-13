@@ -1,4 +1,4 @@
-const ProjectSchema = require("../models/project.model");
+const ProjectModel = require("../models/project.model");
 
 const readProject = async (req, res) => {
     try {
@@ -12,7 +12,7 @@ const createProject = async (req, res) => {
     try {
         const { title, description, teamId } = req.body;
 
-        const checkExist = await ProjectSchema.findOne({ teamId });
+        const checkExist = await ProjectModel.findOne({ teamId });
 
         if (checkExist) {
             return res
@@ -20,7 +20,7 @@ const createProject = async (req, res) => {
                 .json({ msg: "Team Work on another Project" });
         }
 
-        const project = await ProjectSchema.create({
+        const project = await ProjectModel.create({
             title,
             description,
             teamId,
@@ -34,6 +34,9 @@ const createProject = async (req, res) => {
 
 const deleteProject = async (req, res) => {
     try {
+        const { id } = req.params;
+        await ProjectModel.findByIdAndDelete(id);
+        return res.status(200).json({ msg: "Delete Success" });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ msg: "Server Error" });

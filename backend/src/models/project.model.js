@@ -20,4 +20,5 @@ const ProjectSchema = new mongoose.Schema(
     { timestamps: true },
 );
 
-module.exports = mongoose.model("Project", ProjectSchema);
+const ProjectModel = mongoose.model("Project", ProjectSchema);
+module.exports = ProjectModel;
