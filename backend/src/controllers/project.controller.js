@@ -68,6 +68,57 @@ const createProject = async (req, res) => {
     }
 };
 
+const getSingleProject = async (req, res) => {
+    const { id } = req.params
+
+    const project = await ProjectModel.findById(id)
+
+    if (!project) {
+        return res.status(400).json({ msg: "Not Found" })
+    }
+
+    return res.status(200).json({ project })
+};
+
+const updateProject = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, description, teamLead, members, deadline } = req.body;
+
+        const project = await ProjectModel.findById(id);
+
+        if (!project) {
+            return res.status(404).json({ msg: "Project not found" });
+        }
+
+        const updatedProject = await ProjectModel.findByIdAndUpdate(
+            id,
+            {
+                title,
+                description,
+                teamLead,
+                members,
+                deadline
+            },
+            { new: true }
+        )
+            .populate("teamLead", "name email")
+            .populate("members", "name email");
+
+        return res.status(200).json({
+            success: true,
+            msg: "Project updated successfully",
+            project: updatedProject
+        });
+
+    } catch (err) {
+        return res.status(500).json({
+            msg: "Server Error",
+            err: err.message
+        });
+    }
+};
+
 const deleteProject = async (req, res) => {
     try {
         const { id } = req.params;
@@ -79,4 +130,4 @@ const deleteProject = async (req, res) => {
     }
 };
 
-module.exports = { createProject, readProject, deleteProject };
+module.exports = { createProject, readProject, getSingleProject, updateProject, deleteProject };

@@ -27,4 +27,16 @@ const adminOnly = (req, res, next) => {
     next();
 };
 
-module.exports = { loginCheck, adminOnly };
+const roleMiddleware = (...roles) => {
+    return (req, res, next) => {
+        if (!roles.includes(req.user.role)) {
+            return res.status(403).json({
+                status: false,
+                msg: "Access denied"
+            })
+        }
+        next()
+    }
+}
+
+module.exports = { loginCheck, adminOnly, roleMiddleware };
