@@ -46,42 +46,60 @@ const createControl = async (req, res) => {
     try {
         const { username, email, password, role } = req.body;
 
-        if (!username || !email || !password) {
+        if (req.user.role !== "admin") {
+            return res.status(403).json({ msg: "Only admin can create users" });
+        }
+
+        if (!username || !email || !password || !role) {
             return res.status(400).json({ msg: "All fields are required" });
         }
 
+        if (!["manager", "user"].includes(role)) {
+            return res.status(400).json({ msg: "Invalid role" });
+        }
+
         const isExist = await userModel.findOne({
-            $or: [{ username }, { email }],
+            email,
+            workspaceId: req.user.workspaceId,
         });
 
         if (isExist) {
-            return res.status(409).json({ msg: "User already exists" });
+            return res.status(409).json({ msg: "User already exists in this workspace" });
         }
 
         const hashPass = await bcrypt.hash(password, 10);
-
-        await transporter.sendMail({
-            from: `"Team Management" ${process.env.GOOGLE_APP_MAIL}`,
-            to: email,
-            subject: "Your Account Has Been Created",
-            text: `Hello ${username},
-                Your account has been created.
-
-                Email: ${email}
-                Password: ${password}
-
-                Please change your password after login.`,
-            html: mailTemplate(username, email, password),
-        });
 
         const userCreate = await userModel.create({
             username,
             email,
             password: hashPass,
             role,
+            workspaceId: req.user.workspaceId,
         });
 
-        return res.status(201).json({ msg: "User created" });
+        await transporter.sendMail({
+            from: `"Team Management" <${process.env.GOOGLE_APP_MAIL}>`,
+            to: email,
+            subject: "Your Account Has Been Created",
+            text: `Hello ${username},
+Your account has been created.
+
+Email: ${email}
+Password: ${password}
+
+Please change your password after login.`,
+            html: mailTemplate(username, email, password),
+        });
+
+        return res.status(201).json({
+            msg: "User created successfully",
+            user: {
+                id: userCreate._id,
+                email: userCreate.email,
+                role: userCreate.role
+            }
+        });
+
     } catch (err) {
         console.error(err);
         return res.status(500).json({ msg: "Server error" });

@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
 import Projects from "./pages/Projects";
 import Tasks from "./pages/Tasks";
+import Register from "./pages/Register";
 
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -46,6 +47,7 @@ const App = () => {
                     <Route path="my-tasks" element={<Tasks myTasks />} />
                     <Route path="settings" element={<Dashboard settings />} />
                 </Route>
+                <Route path="/register" element={<Register />} />
                 <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
         </BrowserRouter>

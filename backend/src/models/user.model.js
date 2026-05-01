@@ -7,7 +7,6 @@ const userModel = new mongoose.Schema(
             required: true,
             minlength: 3,
             maxlength: 30,
-            unique: true,
         },
         email: {
             type: String,
@@ -28,8 +27,14 @@ const userModel = new mongoose.Schema(
             enum: ["active", "blocked"],
             default: "active",
         },
+        workspaceId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Workspace",
+            required: true,
+        },
+
     },
-    { timestamps: true },
+    { timestamps: true }
 );
 
 module.exports = mongoose.model("User", userModel);

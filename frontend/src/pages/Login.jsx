@@ -221,8 +221,15 @@ export default function Login({ onLogin }) {
                         </button>
                     </form>
 
-                    <p className="text-center text-xs text-slate-600 mt-6">
-                        Any credentials work for demo access
+                    <p className="text-center text-xs text-slate-600 mt-5">
+                        Don't have an account?
+                        <button
+                            type="button"
+                            onClick={() => navigate("/register")}
+                            className="text-blue-400 hover:text-blue-300 transition-colors font-semibold"
+                        >
+                            Sign Up
+                        </button>
                     </p>
                 </div>
             </div>
