@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 import {
     Zap,
     Eye,
@@ -15,6 +16,8 @@ import {
     Globe,
     CheckCircle2,
 } from "lucide-react";
+import { registerHandler } from "../services/auth";
+import { useAuth } from "../context/AuthContext";
 
 export default function Register({ onRegister }) {
     const [step, setStep] = useState(1);
@@ -23,6 +26,8 @@ export default function Register({ onRegister }) {
     const [error, setError] = useState("");
     const [showPw, setShowPw] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
+
+    const { setUser } = useAuth();
 
     const [form, setForm] = useState({
         firstName: "",
@@ -68,9 +73,8 @@ export default function Register({ onRegister }) {
     ];
 
     const goStep2 = () => {
-        if (!form.firstName.trim() || !form.lastName.trim()) {
+        if (!form.firstName.trim() || !form.lastName.trim())
             return setError("Please enter your full name.");
-        }
         if (!form.phone.trim())
             return setError("Please enter your phone number.");
         if (!form.email.trim() || !form.email.includes("@"))
@@ -86,18 +90,36 @@ export default function Register({ onRegister }) {
             return setError("Password must be at least 6 characters.");
         if (form.password !== form.confirmPw)
             return setError("Passwords do not match.");
-        if (!form.terms)
-            return setError("Please accept the Terms of Service to continue.");
+        if (!form.terms) return setError("Please accept the Terms of Service.");
 
         setError("");
         setLoading(true);
-        await new Promise((r) => setTimeout(r, 1200));
-        setLoading(false);
-        setDone(true);
-        setTimeout(() => {
-            if (onRegister) onRegister();
-            navigate("/dashboard");
-        }, 2800);
+
+        try {
+            const formdata = {
+                username: form.firstName,
+                email: form.email,
+                password: form.password,
+                workspaceName: form.workspace,
+            };
+
+            const res = await registerHandler(formdata);
+            // console.log(res);
+            if (res) {
+                toast.success("Account created successfully");
+            }
+
+            onRegister();
+            setDone(true);
+            setTimeout(() => {
+                navigate("/dashboard");
+            }, 1500);
+        } catch (err) {
+            console.log(err);
+            toast.error(err?.response?.data?.msg || "Something went wrong");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const strength = passwordStrength();
@@ -122,7 +144,11 @@ export default function Register({ onRegister }) {
                     "linear-gradient(135deg, #0a0c14 0%, #0f1320 50%, #0a0c14 100%)",
             }}
         >
-            {/* Background grid */}
+            <ToastContainer
+                position="top-center"
+                autoClose={3000}
+                theme="colored"
+            />
             <div
                 className="absolute inset-0 opacity-20 pointer-events-none"
                 style={{
@@ -132,7 +158,6 @@ export default function Register({ onRegister }) {
                 }}
             />
 
-            {/* Glow blobs */}
             <div
                 className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-10 blur-3xl pointer-events-none"
                 style={{
@@ -157,7 +182,6 @@ export default function Register({ onRegister }) {
                             "0 25px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)",
                     }}
                 >
-                    {/* Logo */}
                     <div className="flex items-center gap-3 mb-7">
                         <div
                             className="w-10 h-10 rounded-xl flex items-center justify-center"
@@ -181,15 +205,12 @@ export default function Register({ onRegister }) {
                         </div>
                     </div>
 
-                    {/* Heading */}
                     <div className="mb-5">
                         <h2
                             className="text-2xl font-bold text-white"
                             style={{ fontFamily: "'DM Sans', sans-serif" }}
                         >
-                            {done
-                                ? "You're all set! 🎉"
-                                : "Create your account"}
+                            {done ? "You're all set!" : "Create your account"}
                         </h2>
                         {!done && (
                             <p className="text-sm text-slate-500 mt-1">
@@ -198,7 +219,6 @@ export default function Register({ onRegister }) {
                         )}
                     </div>
 
-                    {/* Step Indicator */}
                     {!done && (
                         <div className="flex items-center gap-2 mb-5">
                             {[
@@ -266,7 +286,6 @@ export default function Register({ onRegister }) {
                         </div>
                     )}
 
-                    {/* Error */}
                     {error && (
                         <div className="flex items-center gap-2 p-3 rounded-lg mb-4 text-sm text-red-400 bg-red-500/10 border border-red-500/20">
                             <AlertCircle size={15} />
@@ -274,10 +293,8 @@ export default function Register({ onRegister }) {
                         </div>
                     )}
 
-                    {/* ── STEP 1 ── */}
                     {step === 1 && !done && (
                         <div className="space-y-3">
-                            {/* Name row */}
                             <div className="grid grid-cols-2 gap-2.5">
                                 <div>
                                     <label className="block text-xs font-medium text-slate-400 mb-1.5">
@@ -323,7 +340,6 @@ export default function Register({ onRegister }) {
                                 </div>
                             </div>
 
-                            {/* Phone */}
                             <div>
                                 <label className="block text-xs font-medium text-slate-400 mb-1.5">
                                     Phone Number
@@ -346,7 +362,6 @@ export default function Register({ onRegister }) {
                                 </div>
                             </div>
 
-                            {/* Email */}
                             <div>
                                 <label className="block text-xs font-medium text-slate-400 mb-1.5">
                                     Email Address
@@ -385,10 +400,8 @@ export default function Register({ onRegister }) {
                         </div>
                     )}
 
-                    {/* ── STEP 2 ── */}
                     {step === 2 && !done && (
                         <div className="space-y-3">
-                            {/* Workspace name */}
                             <div>
                                 <label className="block text-xs font-medium text-slate-400 mb-1.5">
                                     Workspace Name
@@ -409,7 +422,6 @@ export default function Register({ onRegister }) {
                                         onBlur={blurStyle}
                                     />
                                 </div>
-                                {/* Slug preview */}
                                 <div className="flex items-center gap-1 mt-1.5">
                                     <Globe
                                         size={10}
@@ -424,7 +436,6 @@ export default function Register({ onRegister }) {
                                 </div>
                             </div>
 
-                            {/* Password */}
                             <div>
                                 <label className="block text-xs font-medium text-slate-400 mb-1.5">
                                     Password
@@ -456,7 +467,6 @@ export default function Register({ onRegister }) {
                                         )}
                                     </button>
                                 </div>
-                                {/* Strength bars */}
                                 {form.password && (
                                     <div className="mt-2 space-y-1">
                                         <div className="flex gap-1">
@@ -483,7 +493,6 @@ export default function Register({ onRegister }) {
                                 )}
                             </div>
 
-                            {/* Confirm Password */}
                             <div>
                                 <label className="block text-xs font-medium text-slate-400 mb-1.5">
                                     Confirm Password
@@ -519,7 +528,6 @@ export default function Register({ onRegister }) {
                                 </div>
                             </div>
 
-                            {/* Terms */}
                             <label className="flex items-start gap-2.5 cursor-pointer mt-1">
                                 <input
                                     type="checkbox"
@@ -583,7 +591,6 @@ export default function Register({ onRegister }) {
                         </div>
                     )}
 
-                    {/* ── SUCCESS ── */}
                     {done && (
                         <div className="text-center py-4">
                             <div
@@ -612,7 +619,6 @@ export default function Register({ onRegister }) {
                                 <br />
                                 Redirecting you to the dashboard…
                             </p>
-                            {/* Progress bar */}
                             <div
                                 className="mt-5 h-0.5 rounded-full overflow-hidden"
                                 style={{ background: "rgba(255,255,255,0.06)" }}

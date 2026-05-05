@@ -7,10 +7,11 @@ import Users from "./pages/Users";
 import Projects from "./pages/Projects";
 import Tasks from "./pages/Tasks";
 import Register from "./pages/Register";
+import { useAuth } from "./context/AuthContext";
+import { ToastContainer } from "react-toastify";
 
 const App = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-
+    const { isAuthenticated, setIsAuthenticated } = useAuth();
     return (
         <BrowserRouter>
             <Routes>
@@ -47,9 +48,19 @@ const App = () => {
                     <Route path="my-tasks" element={<Tasks myTasks />} />
                     <Route path="settings" element={<Dashboard settings />} />
                 </Route>
-                <Route path="/register" element={<Register />} />
+                <Route
+                    path="/register"
+                    element={
+                        <Register onRegister={() => setIsAuthenticated(true)} />
+                    }
+                />
                 <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
+            <ToastContainer
+                position="top-center"
+                autoClose={3000}
+                theme="colored"
+            />
         </BrowserRouter>
     );
 };

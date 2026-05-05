@@ -48,6 +48,7 @@ const loginControl = async (req, res) => {
                 email: user.email,
                 role: user.role,
             },
+            token
         });
 
     } catch (err) {
@@ -62,6 +63,10 @@ const registerControl = async (req, res) => {
 
         if (!username || !email || !password || !workspaceName) {
             return res.status(400).json({ msg: "All fields are required" });
+        }
+
+        if (username.length < 3) {
+            return res.status(400).json({ msg: "Name Is Too Short" })
         }
 
         const isExist = await userModel.findOne({ email });
@@ -114,7 +119,7 @@ const registerControl = async (req, res) => {
 
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ msg: "Server error" });
+        return res.status(500).json({ msg: "Server error", error: err });
     }
 };
 

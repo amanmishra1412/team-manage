@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Zap, Eye, EyeOff, ArrowRight, AlertCircle } from "lucide-react";
+import { toast } from "react-toastify";
+import { loginHandler } from "../services/auth";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login({ onLogin }) {
     const [email, setEmail] = useState("");
@@ -10,18 +13,34 @@ export default function Login({ onLogin }) {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    const { setUser } = useAuth();
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
+
         if (!email || !password) {
-            setError("Please fill in all fields.");
+            toast.warning("Please fill in all fields");
             return;
         }
+
         setLoading(true);
-        await new Promise((r) => setTimeout(r, 900));
-        setLoading(false);
-        onLogin();
-        navigate("/dashboard");
+
+        try {
+            const res = await loginHandler({ email, password });
+            localStorage.setItem("token", res.token);
+            toast.success("Login successful 🎉");
+            onLogin();
+            setUser(res.user);
+            setTimeout(() => {
+                navigate("/dashboard");
+            }, 2000);
+        } catch (err) {
+            console.log(err);
+            toast.error(err.response?.data?.msg || "Something Went Wrong");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (

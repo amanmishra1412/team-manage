@@ -10,6 +10,8 @@ import {
     LogOut,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { logoutHandler } from "../services/auth";
+import { toast } from "react-toastify";
 
 const notifications = [
     {
@@ -54,9 +56,19 @@ export default function Navbar({ onLogout }) {
     const markAllRead = () =>
         setNotifs(notifs.map((n) => ({ ...n, read: true })));
 
-    const handleLogout = () => {
-        onLogout();
-        navigate("/login");
+    const handleLogout = async () => {
+        try {
+            onLogout();
+            const res = await logoutHandler();
+            toast.success(res.msg);
+            localStorage.clear();
+            setTimeout(() => {
+                navigate("/login");
+            }, 2000);
+        } catch (err) {
+            console.log(err);
+            toast.error(err.response.data.msg || "Something Went Wrong");
+        }
     };
 
     return (

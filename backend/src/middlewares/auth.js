@@ -9,7 +9,7 @@ const loginCheck = (req, res, next) => {
                 .json({ msg: "Token missing. Login required" });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECERET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         req.user = decoded;
 
