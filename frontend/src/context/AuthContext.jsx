@@ -1,22 +1,45 @@
-import React from "react";
-import { useContext } from "react";
-import { useState } from "react";
-import { createContext } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { getMe } from "../services/auth";
 
 export const AuthProvider = createContext();
 
 const AuthContext = ({ children }) => {
     const [user, setUser] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    const fetchUser = async () => {
+        try {
+            const res = await getMe();
+
+            setUser(res.user);
+            console.log(res, isAuthenticated);
+            setIsAuthenticated(true);
+        } catch (err) {
+            setUser(null);
+            setIsAuthenticated(false);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchUser();
+    }, []);
 
     return (
-        <div>
-            <AuthProvider.Provider
-                value={{ user, setUser, isAuthenticated, setIsAuthenticated }}
-            >
-                {children}
-            </AuthProvider.Provider>
-        </div>
+        <AuthProvider.Provider
+            value={{
+                user,
+                setUser,
+                isAuthenticated,
+                setIsAuthenticated,
+                loading,
+                fetchUser,
+            }}
+        >
+            {children}
+        </AuthProvider.Provider>
     );
 };
 

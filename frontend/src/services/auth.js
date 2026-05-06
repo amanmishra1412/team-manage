@@ -18,13 +18,12 @@ export const registerHandler = async (data) => {
     }
 }
 
-export const getMe = async (data) => {
+export const getMe = async () => {
     try {
-        const res = await api.post('/auth/get-me', data)
+        const res = await api.get('/auth/get-me')
         return res.data
     } catch (err) {
         throw err
-
     }
 }
 

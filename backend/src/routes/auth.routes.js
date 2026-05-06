@@ -3,6 +3,7 @@ const {
     loginControl,
     registerControl,
     logoutControl,
+    getMeControl,
 } = require("../controllers/auth.controller");
 
 const { loginCheck } = require("../middlewares/auth");
@@ -15,6 +16,7 @@ router.get("/", (req, res) => {
 
 router.post("/login", loginControl);
 router.post("/register", registerControl);
+router.get("/get-me", loginCheck, getMeControl);
 router.get("/logout", loginCheck, logoutControl);
 
 module.exports = router;

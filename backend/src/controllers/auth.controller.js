@@ -36,7 +36,7 @@ const loginControl = async (req, res) => {
         res.cookie("token", token, {
             httpOnly: true,
             secure: false,
-            sameSite: "Strict",
+            sameSite: "Lax",
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
@@ -52,7 +52,7 @@ const loginControl = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
+        // console.error(err);
         return res.status(500).json({ msg: "Server error" });
     }
 };
@@ -118,8 +118,33 @@ const registerControl = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
+        // console.error(err);
         return res.status(500).json({ msg: "Server error", error: err });
+    }
+};
+
+const getMeControl = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+
+        const user = await userModel.findById(userId).select("-password");
+
+        if (!user) {
+            return res.status(404).json({ msg: "User not found" });
+        }
+
+        return res.status(200).json({
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                workspaceId: user.workspaceId,
+            },
+        });
+
+    } catch (err) {
+        return res.status(500).json({ msg: "Server error", err: err.message });
     }
 };
 
@@ -128,4 +153,4 @@ const logoutControl = (req, res) => {
     return res.status(200).json({ msg: "Logout Success" });
 };
 
-module.exports = { loginControl, registerControl, logoutControl };
+module.exports = { loginControl, registerControl, getMeControl, logoutControl };

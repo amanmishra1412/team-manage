@@ -12,6 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { logoutHandler } from "../services/auth";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
 
 const notifications = [
     {
@@ -45,6 +46,8 @@ const notifications = [
 ];
 
 export default function Navbar({ onLogout }) {
+    const { user } = useAuth();
+
     const [showNotifs, setShowNotifs] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
     const [search, setSearch] = useState("");
@@ -226,7 +229,7 @@ export default function Navbar({ onLogout }) {
                                 className="text-xs font-medium text-white leading-tight"
                                 style={{ fontFamily: "'DM Sans', sans-serif" }}
                             >
-                                Alex Morgan
+                                {user.username}
                             </p>
                             <p className="text-xs text-slate-500">Admin</p>
                         </div>
